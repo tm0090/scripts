@@ -120,30 +120,34 @@ Run the script and answer the two prompts:
 python3 media_scraper.py
 ```
 
+```text
 === Media File Consolidator ===
 Enter the parent source folder path: ~/AndroidBackup/DCIM
 Enter the destination folder path: ~/RestoredPhotos
-
+```
 
 Paths support `~` and are resolved to absolute paths automatically.
 
 ### Example
 
+```text
 AndroidBackup/DCIM/
 ├── Camera/2023/IMG_001.jpg
-├── WhatsApp/Media/IMG_001.jpg <- same filename, different folder
+├── WhatsApp/Media/IMG_001.jpg      <- same filename, different folder
 └── Screenshots/old/shot.png
-
+```
 
 Result:
 
+```text
 RestoredPhotos/
 ├── IMG_001.jpg
-├── IMG_001_1.jpg <- renamed to avoid overwrite
+├── IMG_001_1.jpg                  <- renamed to avoid overwrite
 └── shot.png
-
+```
 
 ### Notes
 
 - Destination cannot be a subfolder of source (the script blocks this to avoid an infinite/self-referential move).
 - Only images and videos are touched — audio, documents, and everything else is left untouched in place.
+- There's currently no `--dry-run` or undo — if you want to preview what would move before committing, that'd be a good next feature to add.
