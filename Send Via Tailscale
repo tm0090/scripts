@@ -1,0 +1,71 @@
+#!/bin/bash
+
+# 1. Grab all file paths passed from Nautilus
+FILES=("$@")
+
+if [ ${#FILES[@]} -eq 0 ]; then
+    zenity --error --text="No files selected." --title="Error"
+    exit 1
+fi
+
+# 2. Get the target device
+TARGET=$(tailscale status | grep -v "logged out" | awk '{print $2}' | grep -v "$(hostname -s)" | zenity --list --title="Tailscale Share" --column="Select Target Device" --width=300 --height=400)
+
+if [ -z "$TARGET" ]; then
+    exit 0
+fi
+
+TOTAL_FILES=${#FILES[@]}
+CURRENT=0
+
+# Clean up any old error logs
+rm -f /tmp/taildrop_errors.tmp
+
+# 3. Transfer loop with file-by-file progress and Cancel detection
+(
+for FILE in "${FILES[@]}"; do
+    FILENAME=$(basename "$FILE")
+    
+    # Calculate current percentage
+    PERCENT=$(( CURRENT * 100 / TOTAL_FILES ))
+    
+    # Update Zenity text and percentage
+    echo "$PERCENT"
+    echo "# Sending: $FILENAME ($((CURRENT + 1))/$TOTAL_FILES)"
+    
+    # Run the transfer
+    ERROR_MSG=$(tailscale file cp "$FILE" "$TARGET": 2>&1)
+    if [ $? -ne 0 ]; then
+        echo "$FILENAME: $ERROR_MSG" >> /tmp/taildrop_errors.tmp
+    fi
+    
+    CURRENT=$((CURRENT + 1))
+done
+
+# Push bar to 100% at the very end
+echo "100"
+echo "# All files handed over to Tailscale."
+) | zenity --progress \
+  --title="Taildrop Transfer" \
+  --text="Preparing transfer..." \
+  --percentage=0 \
+  --auto-close \
+  --auto-kill
+
+# 4. Check if the user clicked the Cancel button
+ZENITY_STATUS=$?
+
+if [ $ZENITY_STATUS -eq 1 ]; then
+    zenity --warning --text="Transfer queue was cancelled.\n(Note: The file currently transferring may still finish.)" --title="Cancelled"
+    rm -f /tmp/taildrop_errors.tmp
+    exit 1
+fi
+
+# 5. Handle any errors that occurred during a successful run
+if [ -f /tmp/taildrop_errors.tmp ]; then
+    ERR_TEXT=$(cat /tmp/taildrop_errors.tmp)
+    rm -f /tmp/taildrop_errors.tmp
+    zenity --error --text="Finished with errors:\n\n$ERR_TEXT" --title="Transfer Errors"
+else
+    zenity --info --text="Successfully queued $TOTAL_FILES file(s) to $TARGET!" --timeout=3
+fi
