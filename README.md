@@ -91,3 +91,48 @@ Now your Linux PC will automatically receive files from your phone 24/7 — no n
 ---
 
 ## Media Scraper
+
+Recursively walks a parent folder — including any number of nested subfolders — and moves (or copies) all media files it finds into a single flat destination folder. Mainly built for restoring photos/videos pulled off an Android device, where files often end up scattered across deeply nested `DCIM`, `WhatsApp`, `Pictures`, etc. folders.
+
+**Files:** `scripts/media-scraper/`
+
+### What it does
+
+- Scans a source directory tree of any depth
+- Detects media files by extension (images, videos, etc.)
+- Moves/copies them all into one destination folder
+- Handles duplicate filenames (e.g. renames on conflict) — *(adjust this line to match actual behavior)*
+
+### Requirements
+
+- Python 3.x
+- *(list any pip packages here, or "no external dependencies")*
+
+### Usage
+
+```bash
+python3 media_scraper.py /path/to/source /path/to/destination
+```
+
+*(adjust args/flags to match your actual script — e.g. `--copy` vs `--move`, `--dry-run`, extension filters, etc.)*
+
+### Example
+
+```bash
+python3 media_scraper.py ~/AndroidBackup/DCIM ~/RestoredPhotos
+```
+
+Before:
+
+AndroidBackup/DCIM/
+├── Camera/2023/IMG_001.jpg
+├── WhatsApp/Media/IMG-20230101.jpg
+└── Screenshots/old/shot.png
+
+
+After:
+
+RestoredPhotos/
+├── IMG_001.jpg
+├── IMG-20230101.jpg
+└── shot.png
