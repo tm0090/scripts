@@ -32,7 +32,7 @@ nano ~/.local/share/nautilus/scripts/"Send via Tailscale"
 
 #### 3. Paste the script
 
-Paste in the contents of [`scripts/send-via-tailscale/Send via Tailscale`](scripts/send-via-tailscale/) from this repo.
+Paste in the contents of [`scripts/send-via-tailscale/Send via Tailscale`](https://github.com/tm0090/scripts/blob/main/Send%20Via%20Tailscale) from this repo.
 
 Save and exit nano: `CTRL+O`, `Enter`, then `CTRL+X`.
 
