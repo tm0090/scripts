@@ -150,4 +150,4 @@ RestoredPhotos/
 
 - Destination cannot be a subfolder of source (the script blocks this to avoid an infinite/self-referential move).
 - Only images and videos are touched — audio, documents, and everything else is left untouched in place.
-- There's currently no `--dry-run` or undo — if you want to preview what would move before committing, that'd be a good next feature to add.
+- There's currently no `--dry-run` or undo feature currently.
