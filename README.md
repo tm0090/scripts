@@ -92,47 +92,58 @@ Now your Linux PC will automatically receive files from your phone 24/7 — no n
 
 ## Media Scraper
 
-Recursively walks a parent folder — including any number of nested subfolders — and moves (or copies) all media files it finds into a single flat destination folder. Mainly built for restoring photos/videos pulled off an Android device, where files often end up scattered across deeply nested `DCIM`, `WhatsApp`, `Pictures`, etc. folders.
+Recursively walks a parent folder — including any number of nested subfolders — and **moves** all image and video files it finds into a single flat destination folder. Built for restoring photos/videos pulled off an Android device, where media often ends up scattered across deeply nested `DCIM`, `WhatsApp`, `Pictures`, etc. folders.
 
 **Files:** `scripts/media-scraper/`
 
+> ⚠️ **This moves files, it does not copy them.** The source files are removed from their original location. Make sure you have a backup of the source folder before running this if you're not 100% sure, especially on a first run.
+
 ### What it does
 
-- Scans a source directory tree of any depth
-- Detects media files by extension (images, videos, etc.)
-- Moves/copies them all into one destination folder
-- Handles duplicate filenames (e.g. renames on conflict) — *(adjust this line to match actual behavior)*
+- Recursively scans a source directory tree of any depth
+- Detects media by MIME type (`image/*`, `video/*`) with an extension fallback (covers RAW formats like `.cr2`, `.nef`, `.arw`, `.dng`, and HEIC)
+- Moves every match into one flat destination folder
+- Auto-renames on filename collision (`IMG_0001.jpg` → `IMG_0001_1.jpg`) instead of overwriting
+- Skips files already inside the destination folder, so it's safe to re-run
+- Prints a live log of every file moved, plus a final summary count
 
 ### Requirements
 
 - Python 3.x
-- *(list any pip packages here, or "no external dependencies")*
+- No external dependencies (uses only the standard library: `os`, `shutil`, `mimetypes`, `pathlib`)
 
 ### Usage
 
+Run the script and answer the two prompts:
+
 ```bash
-python3 media_scraper.py /path/to/source /path/to/destination
+python3 media_scraper.py
 ```
 
-*(adjust args/flags to match your actual script — e.g. `--copy` vs `--move`, `--dry-run`, extension filters, etc.)*
+=== Media File Consolidator ===
+Enter the parent source folder path: ~/AndroidBackup/DCIM
+Enter the destination folder path: ~/RestoredPhotos
+
+
+Paths support `~` and are resolved to absolute paths automatically.
 
 ### Example
 
-```bash
-python3 media_scraper.py ~/AndroidBackup/DCIM ~/RestoredPhotos
-```
-
-Before:
-
 AndroidBackup/DCIM/
 ├── Camera/2023/IMG_001.jpg
-├── WhatsApp/Media/IMG-20230101.jpg
+├── WhatsApp/Media/IMG_001.jpg <- same filename, different folder
 └── Screenshots/old/shot.png
 
 
-After:
+Result:
 
 RestoredPhotos/
 ├── IMG_001.jpg
-├── IMG-20230101.jpg
+├── IMG_001_1.jpg <- renamed to avoid overwrite
 └── shot.png
+
+
+### Notes
+
+- Destination cannot be a subfolder of source (the script blocks this to avoid an infinite/self-referential move).
+- Only images and videos are touched — audio, documents, and everything else is left untouched in place.
