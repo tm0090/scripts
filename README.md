@@ -5,6 +5,7 @@ A collection of useful scripts for automating everyday tasks on Linux.
 ## 📜 Table of Contents
 
 - [Send via Tailscale](#send-via-tailscale)
+- [Media Scraper](#Media-Scraper)
 
 ---
 
@@ -89,14 +90,4 @@ Now your Linux PC will automatically receive files from your phone 24/7 — no n
 
 ---
 
-<!--
-## Next Script Name
-
-Short description of what it does.
-
-**Files:** `scripts/next-script/`
-
-### Setup
-
-...
--->
+## Media Scraper
